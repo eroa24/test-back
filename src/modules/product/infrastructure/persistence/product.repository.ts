@@ -17,10 +17,22 @@ export class ProductRepository implements IProductRepository {
     try {
       const product = new Product(createProductDto);
       const savedProduct = await this.productRepository.save(product);
-      return Result.ok<Product>(savedProduct);
+      return Result.sucess<Product>(savedProduct);
     } catch (error) {
       return Result.fail<Product>(
         error.message || "Error al crear el producto",
+        ErrorType.DATABASE
+      );
+    }
+  }
+
+  async findAll(): Promise<Result<Product[]>> {
+    try {
+      const products = await this.productRepository.find();
+      return Result.sucess<Product[]>(products);
+    } catch (error) {
+      return Result.fail<Product[]>(
+        error.message || "Error al obtener los productos",
         ErrorType.DATABASE
       );
     }
