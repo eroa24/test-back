@@ -15,12 +15,12 @@ export class ProductRepository implements IProductRepository {
 
   async create(createProductDto: CreateProductDto): Promise<Result<Product>> {
     try {
-      const product = this.productRepository.create(createProductDto);
+      const product = new Product(createProductDto);
       const savedProduct = await this.productRepository.save(product);
       return Result.ok<Product>(savedProduct);
     } catch (error) {
       return Result.fail<Product>(
-        `Error al crear el producto: ${error.message}`,
+        error.message || "Error al crear el producto",
         ErrorType.DATABASE
       );
     }

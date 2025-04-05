@@ -38,6 +38,8 @@ export class Product {
   updatedAt: Date;
 
   constructor(data?: Partial<Product>) {
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
     if (data) {
       Object.assign(this, data);
     }

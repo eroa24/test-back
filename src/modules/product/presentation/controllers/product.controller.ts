@@ -22,6 +22,9 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto
   ): Promise<Product> {
     const result = await this.createProductUseCase.execute(createProductDto);
-    return this.errorHandler.handleError(result);
+    if (result.isFailure) {
+      this.errorHandler.handleError(result);
+    }
+    return result.getValue();
   }
 }
