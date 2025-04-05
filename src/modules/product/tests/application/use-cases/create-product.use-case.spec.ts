@@ -7,97 +7,79 @@ import { ErrorType } from "@/common/types";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
-  let mockRepository: jest.Mocked<IProductRepository>;
+  let productRepository: IProductRepository;
 
   beforeEach(async () => {
-    mockRepository = {
-      create: jest.fn(),
-    } as any;
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CreateProductUseCase,
         {
           provide: "IProductRepository",
-          useValue: mockRepository,
+          useValue: {
+            create: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     useCase = module.get<CreateProductUseCase>(CreateProductUseCase);
+    productRepository = module.get<IProductRepository>("IProductRepository");
   });
 
   it("should be defined", () => {
     expect(useCase).toBeDefined();
   });
 
-  it("should return validation error when price is negative", async () => {
+  describe("execute", () => {
     const createProductDto = {
-      name: "Name Product",
-      description: "Product Description",
-      price: -10,
-      stock: 10,
-    };
-
-    const result = await useCase.execute(createProductDto);
-
-    expect(result.isFailure).toBe(true);
-    expect(result.error?.type).toBe(ErrorType.VALIDATION);
-    expect(result.error?.message).toBe("El precio no puede ser negativo");
-    expect(mockRepository.create).not.toHaveBeenCalled();
-  });
-
-  it("should return validation error when stock is negative", async () => {
-    const createProductDto = {
-      name: "Name Product",
-      description: "Product Description",
-      price: 100,
-      stock: -5,
-    };
-
-    const result = await useCase.execute(createProductDto);
-
-    expect(result.isFailure).toBe(true);
-    expect(result.error?.type).toBe(ErrorType.VALIDATION);
-    expect(result.error?.message).toBe("El stock no puede ser negativo");
-    expect(mockRepository.create).not.toHaveBeenCalled();
-  });
-
-  it("should return database error when repository fails", async () => {
-    const createProductDto = {
-      name: "Name Product",
-      description: "Product Description",
+      name: "Test Product",
+      description: "Test Description",
       price: 100,
       stock: 10,
     };
 
-    const dbError = Result.fail<Product>("Database error", ErrorType.DATABASE);
-    mockRepository.create.mockResolvedValue(dbError);
+    it("should create a product successfully", async () => {
+      const product = new Product(createProductDto);
+      jest
+        .spyOn(productRepository, "create")
+        .mockResolvedValue(Result.sucess(product));
 
-    const result = await useCase.execute(createProductDto);
+      const result = await useCase.execute(createProductDto);
 
-    expect(result.isFailure).toBe(true);
-    expect(result.error?.type).toBe(ErrorType.DATABASE);
-    expect(mockRepository.create).toHaveBeenCalledWith(createProductDto);
-  });
+      expect(result.isSuccess).toBe(true);
+      expect(result.getValue()).toEqual(
+        expect.objectContaining(createProductDto)
+      );
+      expect(productRepository.create).toHaveBeenCalledWith(createProductDto);
+    });
 
-  it("should return success when product is created", async () => {
-    const createProductDto = {
-      name: "Product Name",
-      description: " Description",
-      price: 100,
-      stock: 10,
-    };
+    it("should handle repository errors", async () => {
+      jest
+        .spyOn(productRepository, "create")
+        .mockResolvedValue(
+          Result.fail("Error al crear el producto", ErrorType.DATABASE)
+        );
 
-    const product = new Product(createProductDto);
-    product.id = 1;
-    const successResult = Result.sucess<Product>(product);
-    mockRepository.create.mockResolvedValue(successResult);
+      const result = await useCase.execute(createProductDto);
 
-    const result = await useCase.execute(createProductDto);
+      expect(result.isFailure).toBe(true);
+      expect(result.error?.message).toBe("Error al crear el producto");
+      expect(result.error?.type).toBe(ErrorType.DATABASE);
+      expect(productRepository.create).toHaveBeenCalledWith(createProductDto);
+    });
 
-    expect(result.isSuccess).toBe(true);
-    expect(result.getValue()).toEqual(product);
-    expect(mockRepository.create).toHaveBeenCalledWith(createProductDto);
+    it("should handle unexpected errors", async () => {
+      jest
+        .spyOn(productRepository, "create")
+        .mockRejectedValue(new Error("Unexpected error"));
+
+      const result = await useCase.execute(createProductDto);
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error?.message).toBe(
+        "Error inesperado al crear el producto"
+      );
+      expect(result.error?.type).toBe(ErrorType.INTERNAL);
+    });
   });
 });

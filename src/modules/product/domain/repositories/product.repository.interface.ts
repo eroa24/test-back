@@ -1,8 +1,8 @@
 import { Product } from "../entities/product.entity";
-import { CreateProductDto } from "../../presentation/dtos/create-product.dto";
+import { CreateProductRequestDto } from "../../presentation/dtos/request/create-product.request.dto";
 import { Result } from "@/common/types";
 
 export interface IProductRepository {
-  create(createProductDto: CreateProductDto): Promise<Result<Product>>;
+  create(createProductDto: CreateProductRequestDto): Promise<Result<Product>>;
   findAll(): Promise<Result<Product[]>>;
 }

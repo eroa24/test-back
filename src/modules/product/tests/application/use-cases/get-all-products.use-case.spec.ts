@@ -33,8 +33,18 @@ describe("GetAllProductsUseCase", () => {
 
   it("should return all products sucess", async () => {
     const products = [
-      new Product({ name: "Product 1", price: 100, stock: 10 }),
-      new Product({ name: "Product 2", price: 200, stock: 20 }),
+      new Product({
+        name: "Product 1",
+        description: "Test product 1",
+        price: 100,
+        stock: 10,
+      }),
+      new Product({
+        name: "Product 2",
+        description: "Test product 2",
+        price: 200,
+        stock: 20,
+      }),
     ];
 
     const successResult = Result.sucess<Product[]>(products);
