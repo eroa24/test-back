@@ -91,7 +91,7 @@ describe("CreateProductUseCase", () => {
 
     const product = new Product(createProductDto);
     product.id = 1;
-    const successResult = Result.ok<Product>(product);
+    const successResult = Result.sucess<Product>(product);
     mockRepository.create.mockResolvedValue(successResult);
 
     const result = await useCase.execute(createProductDto);

@@ -4,7 +4,7 @@ import { ErrorType } from "../error-types";
 describe("Result", () => {
   it("should create a successful result", () => {
     const value = { id: 1, name: "Test" };
-    const result = Result.ok(value);
+    const result = Result.sucess(value);
 
     expect(result.isSuccess).toBe(true);
     expect(result.isFailure).toBe(false);

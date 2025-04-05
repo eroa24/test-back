@@ -35,6 +35,6 @@ export class CreateProductUseCase {
       );
     }
 
-    return Result.ok<Product>(result.getValue());
+    return Result.sucess<Product>(result.getValue());
   }
 }

@@ -79,4 +79,33 @@ describe("ProductRepository", () => {
       );
     });
   });
+
+  describe("findAll", () => {
+    it("should return all products successfully", async () => {
+      const products = [
+        new Product({ name: "Product 1", price: 100, stock: 10 }),
+        new Product({ name: "Product 2", price: 200, stock: 20 }),
+      ];
+
+      jest.spyOn(typeOrmRepository, "find").mockResolvedValue(products);
+
+      const result = await repository.findAll();
+
+      expect(result.isSuccess).toBe(true);
+      expect(result.getValue()).toEqual(products);
+      expect(typeOrmRepository.find).toHaveBeenCalled();
+    });
+
+    it("should return database error when fails", async () => {
+      const error = new Error("Database error");
+      jest.spyOn(typeOrmRepository, "find").mockRejectedValue(error);
+
+      const result = await repository.findAll();
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error?.type).toBe(ErrorType.DATABASE);
+      expect(result.error?.message).toBe("Database error");
+      expect(typeOrmRepository.find).toHaveBeenCalled();
+    });
+  });
 });

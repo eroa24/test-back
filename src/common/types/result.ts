@@ -24,7 +24,7 @@ export class Result<T> {
     return this._value;
   }
 
-  public static ok<U>(value?: U): Result<U> {
+  public static sucess<U>(value?: U): Result<U> {
     return new Result<U>(true, null, value);
   }
 

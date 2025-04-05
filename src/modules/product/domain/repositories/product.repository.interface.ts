@@ -4,4 +4,5 @@ import { Result } from "@/common/types";
 
 export interface IProductRepository {
   create(createProductDto: CreateProductDto): Promise<Result<Product>>;
+  findAll(): Promise<Result<Product[]>>;
 }
