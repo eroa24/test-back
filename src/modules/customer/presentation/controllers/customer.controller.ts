@@ -3,23 +3,21 @@ import {
   Get,
   Post,
   Body,
-  Param,
-  Put,
-  Delete,
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { CreateCustomerDto } from "../dtos/create-customer.dto";
+import { CreateCustomerRequestDto } from "../dtos/request/create-customer.request.dto";
+import { CustomerResponseDto } from "../dtos/response/customer.response.dto";
 import { CreateCustomerUseCase } from "../../application/use-cases/create-customer.use-case";
-import { Customer } from "../../domain/entities/customer.entity";
+import { GetAllCustomersUseCase } from "../../application/use-cases/get-all-customers.use-case";
 import { ErrorHandlerService } from "@/common/services/error-handler.service";
 
-@ApiTags("Customers")
 @Controller("customers")
 export class CustomerController {
   constructor(
     private readonly createCustomerUseCase: CreateCustomerUseCase,
+    private readonly getAllCustomersUseCase: GetAllCustomersUseCase,
     private readonly errorHandler: ErrorHandlerService
   ) {}
 
@@ -29,15 +27,51 @@ export class CustomerController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: "Cliente creado exitosamente",
+    type: CustomerResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: "Datos de cliente inválidos",
   })
   async createCustomer(
-    @Body() createCustomerDto: CreateCustomerDto
-  ): Promise<Customer> {
+    @Body() createCustomerDto: CreateCustomerRequestDto
+  ): Promise<CustomerResponseDto> {
     const result = await this.createCustomerUseCase.execute(createCustomerDto);
-    return this.errorHandler.handleError(result);
+    if (result.isFailure) {
+      this.errorHandler.handleError(result);
+    }
+    const customer = result.getValue();
+    return {
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+    };
+  }
+
+  @Get()
+  @ApiOperation({ summary: "Obtener todos los clientes" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Lista de clientes obtenida exitosamente",
+    type: [CustomerResponseDto],
+  })
+  async getAllCustomers(): Promise<CustomerResponseDto[]> {
+    const result = await this.getAllCustomersUseCase.execute();
+    if (result.isFailure) {
+      this.errorHandler.handleError(result);
+    }
+    return result.getValue().map((customer) => ({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+    }));
   }
 }

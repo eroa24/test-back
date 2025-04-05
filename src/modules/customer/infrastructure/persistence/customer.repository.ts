@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { CustomerEntity } from "./entities/customer.entity";
 import { ICustomerRepository } from "../../domain/repositories/customer.repository.interface";
 import { Customer } from "../../domain/entities/customer.entity";
-import { CreateCustomerDto } from "../../presentation/dtos/create-customer.dto";
+import { CreateCustomerRequestDto } from "../../presentation/dtos/request/create-customer.request.dto";
 import { Result } from "@/common/types";
 import { ErrorType } from "@/common/types";
 
@@ -15,7 +15,9 @@ export class CustomerRepository implements ICustomerRepository {
     private readonly customerRepository: Repository<CustomerEntity>
   ) {}
 
-  async create(customerDto: CreateCustomerDto): Promise<Result<Customer>> {
+  async create(
+    customerDto: CreateCustomerRequestDto
+  ): Promise<Result<Customer>> {
     try {
       const customer = new Customer(customerDto);
       const savedCustomer = await this.customerRepository.save(customer);

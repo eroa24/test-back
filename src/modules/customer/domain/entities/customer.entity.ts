@@ -1,11 +1,11 @@
 export class Customer {
-  id?: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
   address: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(props: {
     name: string;

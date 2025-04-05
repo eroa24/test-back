@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ProductModule } from "./modules/product/product.module";
-import { ProductEntity } from "./modules/product/infrastructure/persistence/entities/product.entity";
-import { CommonModule } from "./common/common.module";
 import { CustomerModule } from "./modules/customer/customer.module";
+import { CommonModule } from "./common/common.module";
+import { ProductEntity } from "./modules/product/infrastructure/persistence/entities/product.entity";
+import { CustomerEntity } from "./modules/customer/infrastructure/persistence/entities/customer.entity";
 
 @Module({
   imports: [
@@ -20,15 +21,15 @@ import { CustomerModule } from "./modules/customer/customer.module";
         username: configService.get("DB_USERNAME", "postgres"),
         password: configService.get("DB_PASSWORD", "postgres"),
         database: configService.get("DB_DATABASE", "test/back"),
-        entities: [ProductEntity],
+        entities: [ProductEntity, CustomerEntity],
         synchronize:
           configService.get("NODE_ENV", "development") === "development",
       }),
       inject: [ConfigService],
     }),
+    CommonModule,
     ProductModule,
     CustomerModule,
-    CommonModule,
   ],
   controllers: [],
   providers: [],

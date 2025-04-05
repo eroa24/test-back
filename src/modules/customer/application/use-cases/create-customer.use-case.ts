@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { ICustomerRepository } from "../../domain/repositories/customer.repository.interface";
-import { CreateCustomerDto } from "../../presentation/dtos/create-customer.dto";
+import { CreateCustomerRequestDto } from "../../presentation/dtos/request/create-customer.request.dto";
 import { Customer } from "../../domain/entities/customer.entity";
 import { Result } from "@/common/types";
 import { ErrorType } from "@/common/types";
@@ -12,7 +12,9 @@ export class CreateCustomerUseCase {
     private readonly customerRepository: ICustomerRepository
   ) {}
 
-  async execute(customerDto: CreateCustomerDto): Promise<Result<Customer>> {
+  async execute(
+    customerDto: CreateCustomerRequestDto
+  ): Promise<Result<Customer>> {
     try {
       const existingCustomers = await this.customerRepository.findAll();
       if (existingCustomers.isSuccess) {

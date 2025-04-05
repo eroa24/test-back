@@ -9,7 +9,6 @@ describe("Customer Entity", () => {
       address: "Test Address",
     });
 
-    expect(customer.id).toBeUndefined();
     expect(customer.name).toBe("Test Customer");
     expect(customer.email).toBe("test@example.com");
     expect(customer.phone).toBe("1234567890");

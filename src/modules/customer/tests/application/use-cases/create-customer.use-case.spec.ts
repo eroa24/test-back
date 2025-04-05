@@ -44,7 +44,6 @@ describe("CreateCustomerUseCase", () => {
       mockRepository.findAll.mockResolvedValue(Result.sucess<Customer[]>([]));
 
       const customer = new Customer(customerDto);
-      customer.id = 1;
       mockRepository.create.mockResolvedValue(
         Result.sucess<Customer>(customer)
       );
@@ -58,7 +57,6 @@ describe("CreateCustomerUseCase", () => {
 
     it("should fail if email already exists", async () => {
       const existingCustomer = new Customer(customerDto);
-      existingCustomer.id = 1;
       mockRepository.findAll.mockResolvedValue(
         Result.sucess<Customer[]>([existingCustomer])
       );

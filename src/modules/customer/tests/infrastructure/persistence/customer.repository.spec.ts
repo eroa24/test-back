@@ -44,7 +44,6 @@ describe("CustomerRepository", () => {
     it("should create a customer success", async () => {
       const savedCustomer = new CustomerEntity();
       Object.assign(savedCustomer, customerDto);
-      savedCustomer.id = 1;
       savedCustomer.createdAt = new Date();
       savedCustomer.updatedAt = new Date();
 
@@ -74,7 +73,7 @@ describe("CustomerRepository", () => {
     it("should return all customers sucess", async () => {
       const customers = [
         {
-          id: 1,
+          id: "1",
           name: "Customer 1",
           email: "customer1@example.com",
           phone: "1234567890",
@@ -83,7 +82,7 @@ describe("CustomerRepository", () => {
           updatedAt: new Date(),
         },
         {
-          id: 2,
+          id: "2",
           name: "Customer 2",
           email: "customer2@example.com",
           phone: "0987654321",
