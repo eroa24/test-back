@@ -6,7 +6,6 @@ import { ErrorHandlerService } from "@/common/services/error-handler.service";
 import { CreateProductUseCase } from "../../application/use-cases/create-product.use-case";
 import { GetAllProductsUseCase } from "../../application/use-cases/get-all-products.use-case";
 
-@ApiTags("products")
 @Controller("products")
 export class ProductController {
   constructor(
