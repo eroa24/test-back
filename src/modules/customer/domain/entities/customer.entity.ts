@@ -1,28 +1,23 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from "typeorm";
-
-@Entity("customers")
 export class Customer {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  id: string;
   name: string;
-
-  @Column()
   email: string;
-
-  @Column({ nullable: true })
   phone: string;
-
-  @CreateDateColumn()
+  address: string;
   createdAt: Date;
-
-  @UpdateDateColumn()
   updatedAt: Date;
+
+  constructor(props: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  }) {
+    this.name = props.name;
+    this.email = props.email;
+    this.phone = props.phone;
+    this.address = props.address;
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
 }

@@ -1,26 +1,30 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Product } from "../../domain/entities/product.entity";
-import { CreateProductDto } from "../../presentation/dtos/create-product.dto";
+import { ProductEntity } from "./entities/product.entity";
 import { IProductRepository } from "../../domain/repositories/product.repository.interface";
-import { Result, ErrorType } from "@/common/types";
+import { Product } from "../../domain/entities/product.entity";
+import { CreateProductRequestDto } from "../../presentation/dtos/request/create-product.request.dto";
+import { Result } from "@/common/types";
+import { ErrorType } from "@/common/types";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
   constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>
+    @InjectRepository(ProductEntity)
+    private readonly productRepository: Repository<ProductEntity>
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Result<Product>> {
+  async create(productDto: CreateProductRequestDto): Promise<Result<Product>> {
     try {
-      const product = new Product(createProductDto);
-      const savedProduct = await this.productRepository.save(product);
-      return Result.sucess<Product>(savedProduct);
+      const product = new Product(productDto);
+      const productEntity = this.mapToEntity(product);
+      const savedProduct = await this.productRepository.save(productEntity);
+      return Result.sucess<Product>(this.mapToDomain(savedProduct));
     } catch (error) {
       return Result.fail<Product>(
-        error.message || "Error al crear el producto",
+        "Error al crear el producto",
         ErrorType.DATABASE
       );
     }
@@ -29,12 +33,39 @@ export class ProductRepository implements IProductRepository {
   async findAll(): Promise<Result<Product[]>> {
     try {
       const products = await this.productRepository.find();
-      return Result.sucess<Product[]>(products);
+      return Result.sucess<Product[]>(
+        products.map((product) => this.mapToDomain(product))
+      );
     } catch (error) {
       return Result.fail<Product[]>(
         error.message || "Error al obtener los productos",
         ErrorType.DATABASE
       );
     }
+  }
+
+  private mapToEntity(product: Product): ProductEntity {
+    const entity = new ProductEntity();
+    entity.id = product.id ?? uuidv4();
+    entity.name = product.name;
+    entity.description = product.description;
+    entity.price = product.price;
+    entity.stock = product.stock;
+    entity.createdAt = product.createdAt ?? new Date();
+    entity.updatedAt = product.updatedAt ?? new Date();
+    return entity;
+  }
+
+  private mapToDomain(entity: ProductEntity): Product {
+    const product = new Product({
+      name: entity.name,
+      description: entity.description,
+      price: entity.price,
+      stock: entity.stock,
+    });
+    product.id = entity.id;
+    product.createdAt = entity.createdAt;
+    product.updatedAt = entity.updatedAt;
+    return product;
   }
 }

@@ -7,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { Customer } from "../../../customer/domain/entities/customer.entity";
+import { CustomerEntity } from "../../../customer/infrastructure/persistence/entities/customer.entity";
 import { Product } from "../../../product/domain/entities/product.entity";
 
 @Entity("transactions")
@@ -18,9 +18,9 @@ export class Transaction {
   @Column({ unique: true })
   transactionNumber: string;
 
-  @ManyToOne(() => Customer)
+  @ManyToOne(() => CustomerEntity)
   @JoinColumn()
-  customer: Customer;
+  customer: CustomerEntity;
 
   @ManyToOne(() => Product)
   @JoinColumn()
