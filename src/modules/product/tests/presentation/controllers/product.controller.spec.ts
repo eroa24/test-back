@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ProductController } from "../../../presentation/controllers/product.controller";
 import { CreateProductUseCase } from "../../../application/use-cases/create-product.use-case";
 import { GetAllProductsUseCase } from "../../../application/use-cases/get-all-products.use-case";
-import { CreateProductDto } from "../../../presentation/dtos/create-product.dto";
+import { CreateProductRequestDto } from "../../../presentation/dtos/request/create-product.request.dto";
 import { Product } from "../../../domain/entities/product.entity";
 import { Result } from "@/common/types";
 import { ErrorType } from "@/common/types";
@@ -54,15 +54,15 @@ describe("ProductController", () => {
 
   describe("createProduct", () => {
     it("should create a product sucess", async () => {
-      const createProductDto: CreateProductDto = {
-        name: " Product",
-        description: " Description",
+      const createProductDto: CreateProductRequestDto = {
+        name: "Product",
+        description: "Description",
         price: 100,
         stock: 10,
       };
 
       const product = new Product(createProductDto);
-      product.id = 1;
+      product.id = "123e4567-e89b-12d3-a456-426614174000";
       const successResult = Result.sucess<Product>(product);
       jest
         .spyOn(createProductUseCase, "execute")
@@ -70,16 +70,24 @@ describe("ProductController", () => {
 
       const result = await controller.createProduct(createProductDto);
 
-      expect(result).toEqual(product);
+      expect(result).toEqual({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      });
       expect(createProductUseCase.execute).toHaveBeenCalledWith(
         createProductDto
       );
     });
 
     it("should throw error when use case fails", async () => {
-      const createProductDto: CreateProductDto = {
-        name: " Product",
-        description: " Description",
+      const createProductDto: CreateProductRequestDto = {
+        name: "Product",
+        description: "Description",
         price: -100,
         stock: 10,
       };
@@ -107,9 +115,22 @@ describe("ProductController", () => {
   describe("getAllProducts", () => {
     it("should return all products successfully", async () => {
       const products = [
-        new Product({ name: "Product 1", price: 100, stock: 10 }),
-        new Product({ name: "Product 2", price: 200, stock: 20 }),
+        new Product({
+          name: "Product 1",
+          description: "Description 1",
+          price: 100,
+          stock: 10,
+        }),
+        new Product({
+          name: "Product 2",
+          description: "Description 2",
+          price: 200,
+          stock: 20,
+        }),
       ];
+
+      products[0].id = "123e4567-e89b-12d3-a456-426614174000";
+      products[1].id = "987fcdeb-a89b-12d3-a456-426614174000";
 
       const successResult = Result.sucess<Product[]>(products);
       jest
@@ -118,7 +139,26 @@ describe("ProductController", () => {
 
       const result = await controller.getAllProducts();
 
-      expect(result).toEqual(products);
+      expect(result).toEqual([
+        {
+          id: products[0].id,
+          name: products[0].name,
+          description: products[0].description,
+          price: products[0].price,
+          stock: products[0].stock,
+          createdAt: products[0].createdAt,
+          updatedAt: products[0].updatedAt,
+        },
+        {
+          id: products[1].id,
+          name: products[1].name,
+          description: products[1].description,
+          price: products[1].price,
+          stock: products[1].stock,
+          createdAt: products[1].createdAt,
+          updatedAt: products[1].updatedAt,
+        },
+      ]);
       expect(getAllProductsUseCase.execute).toHaveBeenCalled();
     });
 
