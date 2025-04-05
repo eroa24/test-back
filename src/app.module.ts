@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ProductModule } from "./modules/product/product.module";
 import { CommonModule } from "./common/common.module";
+import { CustomerModule } from "./modules/customer/customer.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommonModule } from "./common/common.module";
       inject: [ConfigService],
     }),
     ProductModule,
+    CustomerModule,
     CommonModule,
   ],
   controllers: [],
