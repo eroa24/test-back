@@ -5,41 +5,41 @@ El proyecto sigue una arquitectura hexagonal (puertos y adaptadores) con los sig
 ```
 src/
 └── modules/
-    ├── product/                    # Módulo de productos
+    ├── product/                    # Product module
     │   ├── domain/
-    │   │   ├── entities/          # Entidades de dominio
-    │   │   └── repositories/      # Interfaces de repositorios
+    │   │   ├── entities/          # Domain entities
+    │   │   └── repositories/      # Repository interface
     │   ├── application/
-    │   │   └── use-cases/        # Casos de uso
+    │   │   └── use-cases/        # Use cases (business logic)
     │   ├── infrastructure/
-    │   │   └── persistence/      # Implementaciones de repositorios
+    │   │   └── persistence/      # Repository implementations
     │   ├── presentation/
-    │   │   ├── controllers/      # Controladores REST
-    │   │   └── dtos/            # Objetos de transferencia de datos
-    │   └── tests/                # Tests por capa
+    │   │   ├── controllers/      # REST controllers
+    │   │   └── dtos/            # Data transfer object
+    │   └── tests/                # Tests
     │
-    ├── transaction/              # Módulo de transacciones
-    │   ├── domain/
-    │   ├── application/
-    │   ├── infrastructure/
-    │   ├── presentation/
-    │   └── tests/
-    │
-    ├── customer/                 # Módulo de clientes
+    ├── transaction/              # Transaction module
     │   ├── domain/
     │   ├── application/
     │   ├── infrastructure/
     │   ├── presentation/
     │   └── tests/
     │
-    ├── delivery/                 # Módulo de entregas
+    ├── customer/                 # Customer modulo
     │   ├── domain/
     │   ├── application/
     │   ├── infrastructure/
     │   ├── presentation/
     │   └── tests/
     │
-    └── payment/                 # Módulo de integración con pasarela de pagos
+    ├── delivery/                 # Delivery module
+    │   ├── domain/
+    │   ├── application/
+    │   ├── infrastructure/
+    │   ├── presentation/
+    │   └── tests/
+    │
+    └── payment/                 # Integration payments
         ├── domain/
         ├── application/
         ├── infrastructure/
